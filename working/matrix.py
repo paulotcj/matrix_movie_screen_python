@@ -43,11 +43,11 @@ font.bold = True
 green_katakana = [  font.render(char, True, pg.Color('green'))  for char in katakana ] # probably a C library, the first arg is text, the second is antialiasing, the third is color
 
 # symbol = Symbol(WIDTH//2 - FONT_SIZE//2, HEIGHT//2 - FONT_SIZE//2, speed=5)
-symbol_column = SymbolColumn(WIDTH//2 - FONT_SIZE//2, HEIGHT//2 - FONT_SIZE//2)
+symbol_columns = [ SymbolColumn(x,0) for x in range(0, WIDTH , FONT_SIZE) ]
 while True:
     surface.fill(pg.Color('black'))
 
-    symbol_column.draw()
+    [ symbol_column.draw() for symbol_column in symbol_columns ]
 
     [exit() for i in pg.event.get() if i.type == pg.QUIT]
     pg.display.flip() # make all changes made to the screen Surface visible by flipping the offscreen buffer with the onscreen buffer
