@@ -2,37 +2,42 @@ import os
 import pygame as pg
 from random import choice, randrange
 #------------------------------------------------------------
-class Symbol:
+class SpecialChar: #Japanese Katakana
     #------------------------------------------------------------
-    def __init__(self, x, y, speed, chars, pygame):
+    def __init__(self, x, y, speed, chars, pygame, screen_resolution):
         self.x ,self.y = y = x, y
         self.speed = speed
         self.value = choice( chars['green'] )
         self.interval = randrange(5, 30)
         self.pygame = pygame
         self.chars = chars
+        self.screen_resolution = screen_resolution
     #------------------------------------------------------------
     #------------------------------------------------------------
     def draw(self, color):
         frames = self.pygame.time.get_ticks()
+        font_size = self.chars['font_size']
+        screen_width , screen_height = self.screen_resolution
+        
         if not frames % self.interval:
             self.value = choice( self.chars['green'] if color == 'green' else self.chars['lightgreen'] ) #choice -> Return a random element from the non-empty sequence seq
-        self.y = self.y + self.speed if self.y < HEIGHT else (-FONT_SIZE)
+        
+        self.y = self.y + self.speed if self.y < screen_height else (-font_size)
         surface.blit(self.value, (self.x, self.y)) #blit modifies the destination surface by drawing at the specified coordinates.
     #------------------------------------------------------------
 #------------------------------------------------------------
 #------------------------------------------------------------
-class SymbolColumn:
+class CharColumn:
     #------------------------------------------------------------
-    def __init__(self, x, y):
+    def __init__(self, x, y, p_chars, p_pygame, screen_resolution):
         self.column_height = randrange(8,18)
         self.speed = randrange(2,6)
-        self.symbols = [ Symbol(x, i, self.speed, chars=chars_dict , pygame=pg) for i in range(y, y - FONT_SIZE * self.column_height, - FONT_SIZE) ]
+        font_size = p_chars['font_size']
+        self.symbols = [ SpecialChar(x, i, self.speed, chars=p_chars , pygame=p_pygame , screen_resolution=screen_resolution) for i in range(y, y - font_size * self.column_height, - font_size) ]
     #------------------------------------------------------------
     #------------------------------------------------------------
     def draw(self):
-        # if i == 0 then draw light green
-        [  symbol.draw('green') if i else symbol.draw('lightgreen')   for i, symbol in enumerate(self.symbols) ]
+        [  i_char.draw('lightgreen') if i == 0 else  i_char.draw('green')  for i, i_char in enumerate(self.symbols) ]
     #------------------------------------------------------------
 #------------------------------------------------------------
 
@@ -61,44 +66,53 @@ def handle_events(pygame):
     for i in pygame.event.get():
         if i.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
             exit()
-
-    
 #------------------------------------------------------------
+#------------------------------------------------------------
+def intro_fade(pygame, p_surface, p_alpha_value):
+    if not pygame.time.get_ticks() % 20 and p_alpha_value < 170:
+        p_alpha_value += 5
+        p_surface.set_alpha(alpha_value)
+    
+    return p_surface, p_alpha_value
+#------------------------------------------------------------            
+#------------------------------------------------------------            
+def create_char_column(screen_resolution, chars_dict, pygame):
+    screen_width , screen_height = screen_resolution
+    font_size = chars_dict['font_size']
+    symbol_columns = [ CharColumn(x,randrange(-screen_height, 0), p_chars=chars_dict, p_pygame=pygame ,screen_resolution=screen_resolution) for x in range(0, screen_width , font_size) ]
+    return symbol_columns
+#------------------------------------------------------------            
 
 #------------------------------------------------------------
 # def matrix():
 os.environ['SDL_VIDEO_CENTERED'] = '1'
-RES = WIDTH, HEIGHT = 1600, 900 #tuple (1600,900)
+SCREEN_RESOLUTION = SCREEN_WIDTH, SCREEN_HEIGHT = 1600, 900 #tuple (1600,900)
 FONT_SIZE = 40
 alpha_value = 0
 
 pg.init()
-screen = pg.display.set_mode(RES)
-surface = pg.Surface(RES)
+#----------------
+screen = pg.display.set_mode(SCREEN_RESOLUTION)
+surface = pg.Surface(SCREEN_RESOLUTION)
 surface.set_alpha(alpha_value) # set the alpha value for the whole surface
-
+#----------------
 clock = pg.time.Clock()
-
 #----------------
 chars_dict = create_chars(font_name='MS Mincho.ttf', font_size=FONT_SIZE)
 #----------------
 
-
-
-# symbol = Symbol(WIDTH//2 - FONT_SIZE//2, HEIGHT//2 - FONT_SIZE//2, speed=5)
-symbol_columns = [ SymbolColumn(x,randrange(-HEIGHT, 0)) for x in range(0, WIDTH , FONT_SIZE) ]
+# symbol_columns = [ CharColumn(x,randrange(-SCREEN_HEIGHT, 0), p_chars=chars_dict, p_pygame=pg) for x in range(0, SCREEN_WIDTH , FONT_SIZE) ]
+symbol_columns = create_char_column(screen_resolution=SCREEN_RESOLUTION, chars_dict = chars_dict, pygame = pg)
 while True:
     screen.blit(surface, (0,0))
     surface.fill(pg.Color('black'))
 
     [ symbol_column.draw() for symbol_column in symbol_columns ]
 
-    if not pg.time.get_ticks() % 20 and alpha_value < 170:
-        alpha_value += 5
-        surface.set_alpha(alpha_value)
+    surface, alpha_value = intro_fade(pygame=pg, p_surface=surface, p_alpha_value=alpha_value)
 
-    # [exit() for i in pg.event.get() if i.type == pg.QUIT or pg.key.get_pressed()[pg.K_ESCAPE]]
     handle_events(pygame=pg)
+
     pg.display.flip() # make all changes made to the screen Surface visible by flipping the offscreen buffer with the onscreen buffer
 
     clock.tick(60) # control the framerate to 60 FPS
