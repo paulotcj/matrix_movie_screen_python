@@ -17,7 +17,7 @@ class Symbol:
         frames = self.pygame.time.get_ticks()
         if not frames % self.interval:
             self.value = choice( self.chars['green'] if color == 'green' else self.chars['lightgreen'] ) #choice -> Return a random element from the non-empty sequence seq
-        self.y = self.y + self.speed if self.y < HEIGHT else -FONT_SIZE
+        self.y = self.y + self.speed if self.y < HEIGHT else (-FONT_SIZE)
         surface.blit(self.value, (self.x, self.y)) #blit modifies the destination surface by drawing at the specified coordinates.
     #------------------------------------------------------------
 #------------------------------------------------------------
@@ -51,10 +51,18 @@ def create_chars(font_name, font_size):
     #                                            ( R           G          B )  every char will have a different tint of green
     green_katakana = [  font.render(char, True,  ( 0, randrange(100,200), 0 )  )  for char in katakana ] # probably a C library, the first arg is text, the second is antialiasing, the third is color
     lightgreen_katakana = [  font.render(char, True, pg.Color('lightgreen'))  for char in katakana ]
-    chars_dict = {'green' : green_katakana, 'lightgreen' : lightgreen_katakana, 'plain' : katakana}
+    chars_dict = {'green' : green_katakana, 'lightgreen' : lightgreen_katakana, 'plain' : katakana , 'font_size' : font_size, 'font_name' : font_name}
 
 
     return chars_dict
+#------------------------------------------------------------
+#------------------------------------------------------------
+def handle_events(pygame):
+    for i in pygame.event.get():
+        if i.type == pygame.QUIT or pygame.key.get_pressed()[pygame.K_ESCAPE]:
+            exit()
+
+    
 #------------------------------------------------------------
 
 #------------------------------------------------------------
@@ -89,7 +97,8 @@ while True:
         alpha_value += 5
         surface.set_alpha(alpha_value)
 
-    [exit() for i in pg.event.get() if i.type == pg.QUIT]
+    # [exit() for i in pg.event.get() if i.type == pg.QUIT or pg.key.get_pressed()[pg.K_ESCAPE]]
+    handle_events(pygame=pg)
     pg.display.flip() # make all changes made to the screen Surface visible by flipping the offscreen buffer with the onscreen buffer
 
     clock.tick(60) # control the framerate to 60 FPS
