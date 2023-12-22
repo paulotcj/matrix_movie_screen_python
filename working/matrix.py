@@ -19,13 +19,18 @@ class SpecialChar: #Japanese Katakana
         font_size = self.chars['font_size']
         screen_width , screen_height = self.screen_resolution
         
-        if (frames % self.interval) == 0:
+        if (frames % self.interval) == 0: #this makes the chars flick given a certain interval
+            #now considering we are flicking the chars, we need to identify if this is the first char of the column, the first char is always light green
             if color == 'green':
                 self.value = choice( self.chars['green'] )
             else:
                 self.value = choice( self.chars['lightgreen'] )
-        
-        self.y = self.y + self.speed if self.y < screen_height else (-font_size)
+
+        if self.y < screen_height:
+            self.y = self.y + self.speed
+        else:
+            self.y = -font_size
+
         surface.blit(self.value, (self.x, self.y)) #blit modifies the destination surface by drawing at the specified coordinates.
     #------------------------------------------------------------
 #------------------------------------------------------------
