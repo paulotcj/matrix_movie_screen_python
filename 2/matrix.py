@@ -6,12 +6,9 @@ class Symbol:
     def __init__(self, x, y):
         self.x ,self.y = y = x, y
         self.value = choice(green_katakana)
-        # self.interval = randrange(5, 30)
 
     def draw(self):
         frames = pg.time.get_ticks()
-        # if not frames % self.interval:
-        #     self.value = choice(green_katakana) #choice -> Return a random element from the non-empty sequence seq
         surface.blit(self.value, (self.x, self.y)) #blit modifies the destination surface by drawing at the specified coordinates.
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
