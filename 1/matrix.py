@@ -2,14 +2,6 @@ import os
 import pygame as pg
 from random import choice, randrange
 
-class Symbol:
-    def __init__(self, x, y):
-        self.x ,self.y = y = x, y
-        self.value = choice(green_katakana)
-
-    def draw(self):
-        surface.blit(self.value, (self.x, self.y)) #blit modifies the destination surface by drawing at the specified coordinates.
-
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 RES = WIDTH, HEIGHT = 1600, 900 #tuple (1600,900)
 FONT_SIZE = 40
