@@ -36,12 +36,12 @@ class SpecialChar: #Japanese Katakana
 #------------------------------------------------------------
 class CharColumn:
     #------------------------------------------------------------
-    def __init__(self, x, y, p_chars, p_pygame, screen_resolution):
+    def __init__(self, x, y, chars, pygame, screen_resolution):
         self.column_height = randrange(8,18)
         self.speed = randrange(2,6)
-        font_size = p_chars['font_size']
-        self.chars = p_chars
-        self.pygame = p_pygame
+        font_size = chars['font_size']
+        self.chars = chars
+        self.pygame = pygame
         self.screen_resolution = screen_resolution
 
         self.symbols = []
@@ -105,7 +105,7 @@ def create_char_column(screen_resolution, chars_dict, pygame):
     symbol_columns = []
     for x in range(0, screen_width , font_size):
         y = randrange(-screen_height, 0)
-        temp = CharColumn(x,y, p_chars=chars_dict, p_pygame=pygame ,screen_resolution=screen_resolution) 
+        temp = CharColumn(x,y, chars=chars_dict, pygame=pygame ,screen_resolution=screen_resolution) 
         symbol_columns.append(temp)
     #-----
 
@@ -121,6 +121,7 @@ def matrix():
 
     pg.init()
     #----------------
+    pg.display.set_caption('Matrix')
     screen = pg.display.set_mode(SCREEN_RESOLUTION)
     surface = pg.Surface(SCREEN_RESOLUTION)
     surface.set_alpha(alpha_value) # set the alpha value for the whole surface
